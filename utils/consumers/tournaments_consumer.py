@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from http import HTTPStatus
 import json
 import requests
@@ -19,16 +20,17 @@ class TournamentsConsumer(Resource):
 
             return []
 
-        return Exception('Unauthorized')
+        raise Exception('Unauthorized')
 
-    def create_tournament(self, title, gameId):
+    def create_tournament(self, title, game_id, rounds):
         if self.is_auth:
             response = requests.post(
                 self.build_url(),
                 auth=BearerAuth(self.token),
                 json={
                     'title': title,
-                    'gameId': gameId,
+                    'gameId': game_id,
+                    'rounds': rounds
                 },
             )
 
@@ -38,3 +40,25 @@ class TournamentsConsumer(Resource):
             raise Exception(response.status_code, response.text)
 
         raise Exception('Unauthorized')
+
+    def open_tournament(self, tournament_id):
+        if self.is_auth:
+            response = requests.patch(
+                self.build_url(f'{tournament_id}/open'),
+                auth=BearerAuth(self.token),
+            )
+
+            if response.status_code in [HTTPStatus.OK, HTTPStatus.CREATED]:
+                return json.loads(response.text)
+
+            raise Exception(response.status_code, response.text)
+
+        raise Exception('Unauthorized')
+
+
+@dataclass
+class TournamentStatus:
+    created:str = 'CREATED'
+    open:str = 'OPEN'
+    playing:str = 'PLAYING'
+    completed:str = 'COMPLETED'
