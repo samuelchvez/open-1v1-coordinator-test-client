@@ -31,8 +31,6 @@ class UsersConsumer(Resource):
                 },
             )
 
-            print('nenenenennee', response.text)
-
             if response.status_code in [HTTPStatus.OK, HTTPStatus.CREATED]:
                 return json.loads(response.text)
 
