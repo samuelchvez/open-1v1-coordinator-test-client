@@ -60,40 +60,53 @@ def start():
     while wants_to_be_in_home:
         print(render(is_registered))
 
-        # try:
-        selected_option = int(input("> Input: "))
+        try:
+            selected_option = int(input("> Input: "))
 
-        if not is_registered:
-            if selected_option == 1:
-                registered_user = menu.register_user()
-                is_registered = True
+            if not is_registered:
+                if selected_option == 1:
+                    registered_user = menu.register_user()
+                    is_registered = True
 
-            elif selected_option == 2:
-                wants_to_be_in_home = False
+                elif selected_option == 2:
+                    wants_to_be_in_home = False
 
+                else:
+                    print(logger.log_error("Invalid option"))
             else:
-                print(logger.log_error("Invalid option"))
-        else:
-            if selected_option == 1:
-                menu.register_to_tournament(
-                    tournaments_consumer,
-                    tournament_players_consumer
-                )
+                if selected_option == 1:
+                    menu.register_to_tournament(
+                        tournaments_consumer,
+                        tournament_players_consumer
+                    )
 
-            elif selected_option == 2:
-                menu.open_tournament(
-                    registered_user,
-                    tournaments_consumer
-                )
+                elif selected_option == 2:
+                    menu.open_tournament(
+                        registered_user,
+                        tournaments_consumer
+                    )
 
-            elif selected_option == 5:
-                menu.create_tournament(tournaments_consumer)
+                elif selected_option == 3:
+                    menu.join_to_tournament(
+                        config,
+                        tournaments_consumer,
+                        tournament_players_consumer,
+                    )
 
-            elif selected_option == 6:
-                wants_to_be_in_home = False
+                elif selected_option == 4:
+                    menu.start_tournament(
+                        registered_user,
+                        tournaments_consumer
+                    )
 
-            else:
-                print(logger.log_error("Invalid option"))
+                elif selected_option == 5:
+                    menu.create_tournament(tournaments_consumer)
 
-        # except Exception as error:
-        #     print(logger.log_error(str(error)))
+                elif selected_option == 6:
+                    wants_to_be_in_home = False
+
+                else:
+                    print(logger.log_error("Invalid option"))
+
+        except Exception as error:
+            print(logger.log_error(str(error)))

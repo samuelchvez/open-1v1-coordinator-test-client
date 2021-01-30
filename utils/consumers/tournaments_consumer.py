@@ -8,6 +8,20 @@ from .auth import BearerAuth
 
 
 class TournamentsConsumer(Resource):
+    def get_tournament(self, tournament_id):
+        if self.is_auth:
+            response = requests.get(
+                self.build_url(tournament_id),
+                auth=BearerAuth(self.token)
+            )
+
+            if response.status_code == HTTPStatus.OK:
+                return json.loads(response.text)
+
+            return None
+
+        raise Exception('Unauthorized')
+
     def get_tournaments_by_status(self, status):
         if self.is_auth:
             response = requests.get(
@@ -22,7 +36,8 @@ class TournamentsConsumer(Resource):
 
         raise Exception('Unauthorized')
 
-    def create_tournament(self, title, game_id, rounds):
+    # TODO: handle rules (matching schema, rounds, etc)
+    def create_tournament(self, title, game_id):
         if self.is_auth:
             response = requests.post(
                 self.build_url(),
@@ -30,7 +45,6 @@ class TournamentsConsumer(Resource):
                 json={
                     'title': title,
                     'gameId': game_id,
-                    'rounds': rounds
                 },
             )
 
@@ -45,6 +59,20 @@ class TournamentsConsumer(Resource):
         if self.is_auth:
             response = requests.patch(
                 self.build_url(f'{tournament_id}/open'),
+                auth=BearerAuth(self.token),
+            )
+
+            if response.status_code in [HTTPStatus.OK, HTTPStatus.CREATED]:
+                return json.loads(response.text)
+
+            raise Exception(response.status_code, response.text)
+
+        raise Exception('Unauthorized')
+
+    def start_tournament(self, tournament_id):
+        if self.is_auth:
+            response = requests.patch(
+                self.build_url(f'{tournament_id}/start'),
                 auth=BearerAuth(self.token),
             )
 

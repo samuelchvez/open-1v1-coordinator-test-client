@@ -1,3 +1,6 @@
+import os
+
+
 log_title = lambda message: '\n'.join([
     '',
     '=' * (len(message) + 2),
@@ -28,3 +31,16 @@ log_success = lambda message: '\n'.join([
     '-' * (len(message) + 2 + 3),
     '',
 ])
+
+log_info = lambda message: '\n'.join([
+    '',
+    f'* {message}',
+    ''
+])
+
+
+def clear(): 
+    if os.name == 'nt': 
+        os.system('cls') 
+    else:
+        os.system('clear')
