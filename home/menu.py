@@ -65,7 +65,7 @@ def start():
 
             if not is_registered:
                 if selected_option == 1:
-                    registered_user = menu.register_user()
+                    registered_user = menu.register_user(users_consumer)
                     is_registered = True
 
                 elif selected_option == 2:
