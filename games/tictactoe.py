@@ -16,8 +16,8 @@ REVERSE_CELLS = {
 }
 
 PLAYER_PIECES = {
-    1: 'O',
-    2: 'X',
+    1: 'X',
+    2: 'O',
 }
 
 PLAYERS = {
@@ -47,7 +47,7 @@ get_playing_piece = lambda next_turn: f"Playing piece: {PLAYER_PIECES[next_turn]
 
 
 get_interface = lambda match_id, game_state, next_turn: '\n'.join([
-    logger.log_title(f"Playing match: {match_id}"),
+    logger.log_title(f"Playing match: {match_id}") if match_id is not None else '',
     get_board(game_state),
     '',
     logger.log_info(get_playing_piece(next_turn)) if next_turn is not None else ''

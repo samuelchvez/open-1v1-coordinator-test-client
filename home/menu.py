@@ -1,4 +1,4 @@
-from utils.logo import LOGO
+from utils.ascii_art import LOGO
 from utils.configurations_manager import ConfigurationsManager
 from utils.consumers.users_consumer import UsersConsumer
 from utils.consumers.tournaments_consumer import TournamentsConsumer
@@ -55,7 +55,7 @@ def start():
     else:
         print(logger.log_subtitle("Welcome to the tournament administrative client"))
 
-    print(logger.clear())
+    logger.clear()
     print(LOGO)
 
     while wants_to_be_in_home:
@@ -105,6 +105,8 @@ def start():
 
                 elif selected_option == 6:
                     wants_to_be_in_home = False
+
+                # TODO: get closed tournament results
 
                 else:
                     print(logger.log_error("Invalid option"))
