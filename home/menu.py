@@ -55,6 +55,7 @@ def start():
     else:
         print(logger.log_subtitle("Welcome to the tournament administrative client"))
 
+    print(logger.clear())
     print(LOGO)
 
     while wants_to_be_in_home:
