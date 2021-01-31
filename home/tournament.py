@@ -81,9 +81,8 @@ async def in_match_results(
     passkey,
     mtype,
     tournament_id,
-    match_id,
     game_state,
-    next_turn,
+    ask_for_ready,
 ):
     set_ready_success = False
 
@@ -99,23 +98,25 @@ async def in_match_results(
 
         print(tictactoe.get_interface(None, game_state, None))
 
-        try:
-            input("> When you are ready, press enter: ")
+        if ask_for_ready:
+            try:
+                input("> When you are ready, press enter: ")
 
-            await websocket.send(json.dumps({
-                'action': 'set-ready',
-                'payload': {
-                    'passkey': passkey,
-                    'tournamentId': tournament_id,
-                    'matchId': match_id,
-                },
-            }))
+                await websocket.send(json.dumps({
+                    'action': 'set-ready',
+                    'payload': {
+                        'passkey': passkey,
+                        'tournamentId': tournament_id,
+                    },
+                }))
 
-            print(logger.log_info("Waiting for another match..."))
+                print(logger.log_info("Waiting for another match..."))
 
+                set_ready_success = True
+            except:
+                print(logger.log_success("Server accepted the your status change"))
+        else:
             set_ready_success = True
-        except:
-            print(logger.log_success("Server accepted the your status change"))
 
 
 async def tournament_handler(
@@ -190,7 +191,6 @@ async def tournament_message_handler(websocket, passkey, str_message):
             passkey,
             mtype=mtype,
             tournament_id=match['tournamentId'],
-            match_id=match['matchId'],
             game_state=json.loads(match['gameState']),
-            next_turn=match['nextTurn']
+            ask_for_ready=True
         )
