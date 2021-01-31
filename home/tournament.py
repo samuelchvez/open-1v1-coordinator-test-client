@@ -1,5 +1,7 @@
 import json
+
 import websockets
+from tabulate import tabulate
 
 from utils import ascii_art
 from datetime import datetime
@@ -119,6 +121,28 @@ async def in_match_results(
             set_ready_success = True
 
 
+def in_tournament_results(
+    tournament,
+    results,
+):
+    headers = ['Nickname', 'Wins', 'Loses', 'Draws']
+    table = []
+
+    for result in results:
+        table.append(
+            [
+                result['nickname'],
+                result['playerWins'],
+                result['playerLoses'],
+                result['playerDraws'],
+            ]
+        )
+
+    print(ascii_art.FINISHED)
+    print(logger.log_title(f"{tournament['title']} results:"))
+    print(tabulate(table, headers, tablefmt='pretty'))
+
+
 async def tournament_handler(
     config: ConfigurationsManager,
     tournaments_consumer: TournamentsConsumer,
@@ -143,11 +167,14 @@ async def tournament_handler(
         print(logger.log_info("Waiting for torunament to start..."))
 
         async for message in websocket:
-            await tournament_message_handler(
+            tournament_completed = await tournament_message_handler(
                 websocket,
                 passkey,
                 message
             )
+
+            if tournament_completed:
+                break
 
 
 async def tournament_message_handler(websocket, passkey, str_message):
@@ -185,6 +212,7 @@ async def tournament_message_handler(websocket, passkey, str_message):
 
     elif mtype in ['match:won', 'match:lost', 'match:draw']:
         match = mpayload['match']
+        tournament = mpayload['tournament']
 
         await in_match_results(
             websocket,
@@ -192,5 +220,15 @@ async def tournament_message_handler(websocket, passkey, str_message):
             mtype=mtype,
             tournament_id=match['tournamentId'],
             game_state=json.loads(match['gameState']),
-            ask_for_ready=True
+            ask_for_ready=tournament['status'] != 'COMPLETED'
         )
+
+    elif mtype == 'tournament:completed':
+        tournament = mpayload['tournament']
+        results = mpayload['results']
+
+        in_tournament_results(tournament, results)
+
+        return True
+
+    return False
